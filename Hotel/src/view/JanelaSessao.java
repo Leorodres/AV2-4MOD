@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -170,7 +171,7 @@ public class JanelaSessao extends JFrame {
 		
 		tblUsuarios = new JTable();
 		scrollPane.setViewportView(tblUsuarios);
-		
-		
+		scrollPane.getViewport().setBackground(Color.black);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 	}
 }

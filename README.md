@@ -2,6 +2,7 @@
 Projeto de controle de Estadias na linguagem Java utilizado para a avaliação de Modelagem
 
 Código para criação da tabela do código:
+
 -- Table: public.estadia
 
 -- DROP TABLE public.estadia;

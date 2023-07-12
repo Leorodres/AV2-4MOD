@@ -1,5 +1,7 @@
 package model;
 
+import javax.swing.JOptionPane;
+
 public class Sessao {
 	private String nome;
 	private String data;
@@ -31,9 +33,15 @@ public class Sessao {
 		this.quarto = quarto;
 	}
 	public String formatarData() {
+		try {
         return data.substring(6, 10) + "-" +
                data.substring(3, 5) + "-" +
                data.substring(0, 2);
+		}
+		catch(StringIndexOutOfBoundsException e) {
+			JOptionPane.showMessageDialog(null, "Formatação da data incorreta! DD/MM/AAAA");
+			return null;
+		}
     }
 	
 }

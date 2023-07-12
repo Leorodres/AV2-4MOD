@@ -39,18 +39,18 @@ public class DaoSessao {
 		}
 	}
 	
-	public boolean excluir(String nome, String data, int quarto) {
+	public int excluir(String nome, String data, int quarto) {
 		String sql = "DELETE FROM estadia WHERE nome = '" + nome + "' AND data = '" + data + "' AND quarto = " + quarto
 				+ ";";
 
 		try {
 			Connection conexao = DriverManager.getConnection(url, "postgres", "leo");
 			PreparedStatement exclusao = conexao.prepareStatement(sql);
-			exclusao.execute();
-			return true;
+			return exclusao.executeUpdate();
+			
 		} catch (SQLException e) {
 			System.out.println(e);
-			return false;
+			return -1;
 		}
 	}
 }

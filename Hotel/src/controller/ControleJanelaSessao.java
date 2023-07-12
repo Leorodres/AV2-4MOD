@@ -17,7 +17,7 @@ public class ControleJanelaSessao {
         return daoSe.inserir(nome, se.formatarData(), quarto);
     }
     
-    public boolean excluirSessao(String nome, String data, int quarto) {
+    public int excluirSessao(String nome, String data, int quarto) {
         se.setNome(nome);
         se.setData(data);
         se.setQuarto(quarto);

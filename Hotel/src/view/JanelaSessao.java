@@ -43,24 +43,24 @@ public class JanelaSessao extends JFrame {
 
 		JLabel lblCadastroEstd = new JLabel("CADASTRO DE ESTADIAS");
 		lblCadastroEstd.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblCadastroEstd.setForeground(new Color(255,255,255));
+		lblCadastroEstd.setForeground(new Color(255, 255, 255));
 		lblCadastroEstd.setBounds(140, 11, 198, 24);
 		contentPane.add(lblCadastroEstd);
 
 		JLabel lblNome = new JLabel("Nome do hospede:");
 		lblNome.setBackground(new Color(255, 255, 255));
 		lblNome.setBounds(10, 49, 113, 14);
-		lblNome.setForeground(new Color(255,255,255));
+		lblNome.setForeground(new Color(255, 255, 255));
 		contentPane.add(lblNome);
 
 		JLabel lblQuarto = new JLabel("Quarto:");
 		lblQuarto.setBounds(21, 102, 46, 14);
-		lblQuarto.setForeground(new Color(255,255,255));
+		lblQuarto.setForeground(new Color(255, 255, 255));
 		contentPane.add(lblQuarto);
 
 		JLabel lblData = new JLabel("Data:");
 		lblData.setBounds(21, 74, 46, 14);
-		lblData.setForeground(new Color(255,255,255));
+		lblData.setForeground(new Color(255, 255, 255));
 		contentPane.add(lblData);
 
 		textNome = new JTextField();
@@ -88,10 +88,14 @@ public class JanelaSessao extends JFrame {
 				if (cjs.incluirSessao(nome, data, quarto) == true) {
 
 					JOptionPane.showMessageDialog(null, "Estadia cadastrada com sucesso!");
-					
+
 					textNome.setText("");
 					textData.setText("");
 					textQuarto.setText("");
+					DefaultTableModel dtm = (DefaultTableModel) tblUsuarios.getModel();
+					dtm.setRowCount(0);
+					dtm.setColumnCount(0);
+					tblUsuarios.setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(null, "Erro ocorreu, revise as informações!");
 
@@ -101,27 +105,40 @@ public class JanelaSessao extends JFrame {
 				}
 			}
 		});
-		
+
 		JButton btnExcluir = new JButton("CANCELAR");
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent f) {
 				String nome = textNome.getText();
 				String data = textData.getText();
 				int quarto = Integer.parseInt(textQuarto.getText());
-
-				if (cjs.excluirSessao(nome, data, quarto) == true) {
+				int count = cjs.excluirSessao(nome, data, quarto);
+				if (count > 0) {
 
 					JOptionPane.showMessageDialog(null, "Estadia cancelada com sucesso!");
-					
-					textNome.setText("");
-					textData.setText("");
-					textQuarto.setText("");
-				} else {
-					JOptionPane.showMessageDialog(null, "Erro ocorreu, revise as informações!");
 
 					textNome.setText("");
 					textData.setText("");
 					textQuarto.setText("");
+					DefaultTableModel dtm = (DefaultTableModel) tblUsuarios.getModel();
+					dtm.setRowCount(0);
+					dtm.setColumnCount(0);
+					tblUsuarios.setVisible(false);
+				} else {
+					if(count == 0) {
+						JOptionPane.showMessageDialog(null, "Nenhuma estadia encontrada, revise os dados!");
+
+						textNome.setText("");
+						textData.setText("");
+						textQuarto.setText("");
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Erro ocorreu!");
+
+						textNome.setText("");
+						textData.setText("");
+						textQuarto.setText("");
+					}
 				}
 			}
 		});
@@ -129,49 +146,55 @@ public class JanelaSessao extends JFrame {
 		btnExcluir.setBounds(194, 177, 119, 23);
 		contentPane.add(btnCadastrar);
 		contentPane.add(btnExcluir);
-		
+
 		JButton btnListar = new JButton("LISTAR");
 		btnListar.setBounds(323, 177, 119, 23);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(249, 46, 324, 120);
+		contentPane.add(scrollPane);
+
+		tblUsuarios = new JTable();
+		scrollPane.setViewportView(tblUsuarios);
+		scrollPane.getViewport().setBackground(Color.black);
+		tblUsuarios.setVisible(false);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		System.out.println(tblUsuarios.isVisible());
+
+		System.out.println(tblUsuarios.isVisible());
 		btnListar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent g) {
-				ResultSet rs = cjs.listarSessao();
-				if(rs != null) {
-					try {
-						ResultSetMetaData rsmd = rs.getMetaData();
-						DefaultTableModel model = (DefaultTableModel) tblUsuarios.getModel();
-						int cols = rsmd.getColumnCount();
-						String[] colName = new String[cols];
-						for(int i=0;i<cols;i++) {
-							colName[i]=rsmd.getColumnName(i+1);
-							model.setColumnIdentifiers(colName);
+				if (tblUsuarios.isVisible() == false) {
+					tblUsuarios.setVisible(true);
+					ResultSet rs = cjs.listarSessao();
+					if (rs != null) {
+						try {
+							ResultSetMetaData rsmd = rs.getMetaData();
+							DefaultTableModel model = (DefaultTableModel) tblUsuarios.getModel();
+							int cols = rsmd.getColumnCount();
+							String[] colName = new String[cols];
+							for (int i = 0; i < cols; i++) {
+								colName[i] = rsmd.getColumnName(i + 1);
+								model.setColumnIdentifiers(colName);
+							}
+							String id, nome, data, quarto;
+							while (rs.next()) {
+								id = rs.getString(1);
+								nome = rs.getString(2);
+								data = rs.getString(3);
+								quarto = rs.getString(4);
+								String[] linha = { id, nome, data, quarto };
+								model.addRow(linha);
+							}
+						} catch (SQLException e) {
+
+							e.printStackTrace();
 						}
-						String id, nome, data, quarto;
-						while(rs.next()) {
-							id = rs.getString(1);
-							nome = rs.getString(2);
-							data = rs.getString(3);
-							quarto = rs.getString(4);
-							String[] linha = {id, nome, data, quarto};
-							model.addRow(linha);
-						}
-						
-					} catch (SQLException e) {
-						
-						e.printStackTrace();
 					}
 				}
 			}
 		});
-		
+
 		contentPane.add(btnListar);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(249, 46, 324, 120);
-		contentPane.add(scrollPane);
-		
-		tblUsuarios = new JTable();
-		scrollPane.setViewportView(tblUsuarios);
-		scrollPane.getViewport().setBackground(Color.black);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 	}
 }
